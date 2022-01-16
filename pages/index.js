@@ -33,13 +33,11 @@ export default function Home() {
       const tokenUri = await tokenContract.tokenURI(i.tokenId)
       const meta = await axios.get(tokenUri)
       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      let bidprice = ethers.utils.formatUnits(i.bidprice.toString(), "ether")
       let item = {
         price,
         itemId: i.itemId.toNumber(),
         seller: i.seller,
         owner: i.owner,
-        bidprice,
         image: meta.data.image,
         name: meta.data.name,
         description: meta.data.description,
@@ -84,8 +82,6 @@ export default function Home() {
                 <div className="p-4 bg-black">
                   <p className="text-2xl mb-4 font-bold text-white">Price</p>
                   <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
-                  <p className="text-2xl mb-4 font-bold text-white">Starting Bid Price</p>
-                  <p className="text-2xl mb-4 font-bold text-white">{nft.bidprice} ETH</p>
                   <Link href={"nft/"+nft.itemId} className="text-2xl mb-4 font-bold text-white">
                     <a className="text-2xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12">
                       View

@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
+import Fortmatic from "fortmatic"
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
@@ -15,7 +16,7 @@ import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null)
-  const [formInput, updateFormInput] = useState({ price: '', bidprice: '', name: '', description: '' })
+  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' })
   const router = useRouter()
 
   async function onChange(e) {
@@ -34,8 +35,8 @@ export default function CreateItem() {
     }  
   }
   async function createMarket() {
-    const { name, description, price, bidprice } = formInput
-    if (!name || !description || !price || !bidprice || !fileUrl) return
+    const { name, description, price } = formInput
+    if (!name || !description || !price || !fileUrl) return
     /* first, upload to IPFS */
     const data = JSON.stringify({
       name, description, image: fileUrl
@@ -51,7 +52,27 @@ export default function CreateItem() {
   }
 
   async function createSale(url) {
-    const web3Modal = new Web3Modal()
+    // Example for kovan:
+    const customNetworkOptions = {
+      rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+      chainId: 42
+    }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)    
     const signer = provider.getSigner()
@@ -66,14 +87,13 @@ export default function CreateItem() {
     let tokenId = value.toNumber()
 
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
-    const bidprice = ethers.utils.parseUnits(formInput.bidprice, 'ether')
   
     /* then list the item for sale on the marketplace */
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
 
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, bidprice, { value: listingPrice })
+    transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
     await transaction.wait()
     router.push('/')
   }
@@ -95,11 +115,6 @@ export default function CreateItem() {
           placeholder="Asset Price in Eth"
           className="mt-2 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
-        />
-        <input
-          placeholder="Starting bid Price in Eth"
-          className="mt-2 border rounded p-4"
-          onChange={e => updateFormInput({ ...formInput, bidprice: e.target.value })}
         />
         <input
           type="file"
