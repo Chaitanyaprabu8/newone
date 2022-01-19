@@ -92,8 +92,8 @@ export default function CreateItem() {
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
-
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
+    let nextProjectId = await contract.getCurrentProjectId();
+    transaction = await contract.createMarketItem(nftaddress, tokenId,nextProjectId, price, { value: listingPrice })
     await transaction.wait()
     router.push('/')
   }
