@@ -21,6 +21,7 @@ export default function Home() {
     const router = useRouter();
     const {nftId} = router.query;
     const [nfts, setNfts] = useState([])
+    const [provisions, setProvisions] = useState([])
     const [loadingState, setLoadingState] = useState('not-loaded')
     const [formInput, updateFormInput] = useState({ bidprice: '' })
     useEffect(() => {
@@ -39,13 +40,11 @@ export default function Home() {
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
           const meta = await axios.get(tokenUri)
           let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-          let bidprice = ethers.utils.formatUnits(i.bidprice.toString(), "ether")
           let item = {
             price,
             itemId: i.itemId.toNumber(),
             seller: i.seller,
             owner: i.owner,
-            bidprice,
             image: meta.data.image,
             name: meta.data.name,
             description: meta.data.description,
@@ -55,6 +54,36 @@ export default function Home() {
         }))
         console.log(items)
         setNfts(items)
+        setLoadingState('loaded') 
+      }
+      async function loadNFTs() { 
+        
+           
+        const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
+        const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
+        const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
+        const data = await marketContract.fetchProvisions(nftId)
+        //console.log(data);
+        const items = await Promise.all(data.map(async i => {
+            
+          const tokenUri = await tokenContract.tokenURI(i.tokenId)
+          const meta = await axios.get(tokenUri)
+          let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
+          let item = {
+            price,
+            itemId: i.itemId.toNumber(),
+            projectId: i.projectId.toNumber(),
+            seller: i.seller,
+            owner: i.owner,
+            image: meta.data.image,
+            name: meta.data.name,
+            description: meta.data.description,
+          }
+          return item
+          
+        }))
+        //console.log(items)
+        setProvisions(items)
         setLoadingState('loaded') 
       }
       async function buyNft(nft) {
@@ -83,8 +112,38 @@ export default function Home() {
                   nft.itemId==nftId &&
                   <div key={i} className="border shadow rounded-xl overflow-hidden">
                     <object data={nft.image} type="application/pdf" width="1100" height="600">
-            alt : <a href={nft.image}>only pdf files allowed</a>
-                </object>
+                      alt : <a href={nft.image}>only pdf files allowed</a>
+                    </object>
+                    <div className="p-4">
+                      <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
+                      <div style={{ height: '70px', overflow: 'hidden' }}>
+                        <p className="text-gray-400">{nft.description}</p>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-black">
+                      <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
+                      <input
+                          placeholder="Your bid Price in Eth"
+                          className="mt-2 border rounded p-4"
+                          onChange={e => updateFormInput({ ...formInput, bidprice: e.target.value })}
+                      />
+                      <Link href={"/create-provision?project="+nftId} className="text-2xl mb-4 font-bold text-white">
+                        <a className="mr-6 text-pink-500">
+                          Create a Provision
+                        </a>
+                      </Link>
+
+                    </div>
+                  </div>
+                ))
+              }
+              {
+                provisions.map((nft, i) => (
+                  <div key={i} className="border shadow rounded-xl overflow-hidden">
+                    <h3>Provision {i}</h3>
+                    <object data={nft.image} type="application/pdf" width="1100" height="600">
+                      alt : <a href={nft.image}>only pdf files allowed</a>
+                    </object>
                     <div className="p-4">
                       <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
                       <div style={{ height: '70px', overflow: 'hidden' }}>
