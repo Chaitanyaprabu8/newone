@@ -6,10 +6,10 @@ import Web3Modal from "web3modal"
 import Link from 'next/link'
 import {
   nftaddress, nftmarketaddress
-} from '../../config'
+} from '../config'
 
-import NFT from '../../artifacts/contracts/NFT.sol/NFT.json'
-import Market from '../../artifacts/contracts/Market.sol/NFTMarket.json'
+import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
+import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 let rpcEndpoint = 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c'
 
