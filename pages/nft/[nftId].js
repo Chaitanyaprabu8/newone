@@ -6,10 +6,10 @@ import Web3Modal from "web3modal"
 import Link from 'next/link'
 import {
   nftaddress, nftmarketaddress
-} from '../config'
+} from '../../config'
 
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
-import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
+import NFT from '../../artifacts/contracts/NFT.sol/NFT.json'
+import Market from '../../artifacts/contracts/Market.sol/NFTMarket.json'
 
 let rpcEndpoint = 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c'
 
@@ -25,7 +25,8 @@ export default function Home() {
     const [loadingState, setLoadingState] = useState('not-loaded')
     const [formInput, updateFormInput] = useState({ bidprice: '' })
     useEffect(() => {
-      loadNFTs()
+      loadNFTs(),
+      loadProvisions()
     }, [])
     async function loadNFTs() { 
         
@@ -56,7 +57,7 @@ export default function Home() {
         setNfts(items)
         setLoadingState('loaded') 
       }
-      async function loadNFTs() { 
+      async function loadProvisions() { 
         
            
         const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
@@ -122,11 +123,6 @@ export default function Home() {
                     </div>
                     <div className="p-4 bg-black">
                       <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
-                      <input
-                          placeholder="Your bid Price in Eth"
-                          className="mt-2 border rounded p-4"
-                          onChange={e => updateFormInput({ ...formInput, bidprice: e.target.value })}
-                      />
                       <Link href={"/create-provision?project="+nftId} className="text-2xl mb-4 font-bold text-white">
                         <a className="mr-6 text-pink-500">
                           Create a Provision

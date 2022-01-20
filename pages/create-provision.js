@@ -89,6 +89,7 @@ export default function CreateItem() {
      
     let searchParams = new URLSearchParams(paramsString);
     let projectId = searchParams.get('project');
+    projectId = ethers.BigNumber.from(projectId);
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
   
     /* then list the item for sale on the marketplace */
@@ -128,12 +129,12 @@ export default function CreateItem() {
         {
           fileUrl && (
             <object data={fileUrl} type="application/pdf" width="300" height="200">
-        alt : <a href={fileUrl}>only pdf files allowed</a>
+             alt : <a href={fileUrl}>only pdf files allowed</a>
             </object>
           )
         }
         <button onClick={createMarket} className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">
-          Create a Project
+          Create a Provision
         </button>
       </div>
     </div>
