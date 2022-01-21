@@ -37,7 +37,7 @@ export default function Home() {
         const data = await marketContract.fetchMarketItems()
         //console.log(data);
         const items = await Promise.all(data.map(async i => {
-            console.log(nftId);
+            console.log("nftid "+nftId);
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
           const meta = await axios.get(tokenUri)
           let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
@@ -53,9 +53,9 @@ export default function Home() {
           return item
           
         }))
-        console.log(items)
+        //console.log(items)
         setNfts(items)
-        setLoadingState('loaded') 
+       
       }
       async function loadProvisions() { 
         
@@ -63,8 +63,9 @@ export default function Home() {
         const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
         const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
         const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
-        const data = await marketContract.fetchProvisions(nftId)
-        //console.log(data);
+        const data = await marketContract.fetchProvisions("1")
+        console.log('data');
+        console.log(data);
         const items = await Promise.all(data.map(async i => {
             
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
@@ -83,7 +84,8 @@ export default function Home() {
           return item
           
         }))
-        //console.log(items)
+        console.log('items')
+        console.log(items)
         setProvisions(items)
         setLoadingState('loaded') 
       }
