@@ -19,11 +19,7 @@ contract NFTMarket is ReentrancyGuard {
   constructor() {
     owner = payable(msg.sender);
   }
-  function getCurrentProjectId() public returns (uint256) {
-    _projectIds.increment();
-    uint256 currentProjectId = _projectIds.current();
-    return currentProjectId;
-  }
+  
   struct MarketItem {
     uint itemId;
     address nftContract;
@@ -205,8 +201,8 @@ contract NFTMarket is ReentrancyGuard {
 
   /* Returns all unsold market items */
   function fetchMarketItems() public view returns (MarketItem[] memory) {
-    uint itemCount = _itemIds.current();
-    uint unsoldItemCount = _itemIds.current() - _itemsSold.current();
+    uint itemCount = _projectIds.current();
+    uint unsoldItemCount = _projectIds.current() - _itemsSold.current();
     uint currentIndex = 0;
 
     MarketItem[] memory items = new MarketItem[](unsoldItemCount);

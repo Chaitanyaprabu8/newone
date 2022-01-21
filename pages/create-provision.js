@@ -85,11 +85,9 @@ export default function CreateItem() {
     let event = tx.events[0]
     let value = event.args[2]
     let tokenId = value.toNumber()
-    const paramsString = window.location;
-     
-    let searchParams = new URLSearchParams(paramsString);
-    let projectId = searchParams.get('project');
-    projectId = ethers.BigNumber.from(projectId);
+    // VanillaJS
+    const projectId = window.location.search.split("=")[1];
+    console.log(projectId); //101
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
   
     /* then list the item for sale on the marketplace */
