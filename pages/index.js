@@ -35,9 +35,11 @@ export default function Home() {
       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
       let item = {
         price,
-        itemId: i.itemId.toNumber(),
+        projectId: i.projectId.toNumber(),
         seller: i.seller,
         owner: i.owner,
+        depSign:i.depSign,
+        contSign:i.contSign,
         image: meta.data.image,
         name: meta.data.name,
         description: meta.data.description,
@@ -80,9 +82,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4 bg-black">
-                  <p className="text-2xl mb-4 font-bold text-white">Price</p>
-                  <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
-                  <Link href={"nft/"+nft.itemId} className="text-2xl mb-4 font-bold text-white">
+                  <p className="text-2xl mb-4 font-bold text-white">Project {nft.projectId}</p>
+                  <p className="text-2xl mb-4 font-bold text-white">{(nft.depSign===true) ? 'Department Signature: Signed':'Department Signature: Unsigned'}</p>
+                  <p className="text-2xl mb-4 font-bold text-white">{(nft.contSign===true) ? 'Contractor Signature: Signed':'Contractor Signature: Unsigned'}</p>
+                  <Link href={"nft/"+nft.projectId} className="text-2xl mb-4 font-bold text-white">
                     <a className="text-2xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12">
                       View
                     </a>

@@ -95,7 +95,7 @@ export default function CreateItem() {
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
     //let nextProjectId = await contract.getCurrentProjectId();
-    transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, { value: listingPrice })
+    transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, { value: '0' })
     await transaction.wait()
     router.push('/')
   }

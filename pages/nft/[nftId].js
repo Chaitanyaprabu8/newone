@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Web3Modal from "web3modal"
 import Link from 'next/link'
+import Fortmatic from "fortmatic"
 import {
   nftaddress, nftmarketaddress
 } from '../../config'
@@ -30,12 +31,13 @@ export default function Home() {
     }, [])
     async function loadNFTs() { 
         
-           
+        
         const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
         const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
         const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
         const data = await marketContract.fetchMarketItems()
-        //console.log(data);
+        console.log('data')
+        console.log(data)
         const items = await Promise.all(data.map(async i => {
             console.log("nftid "+nftId);
           const tokenUri = await tokenContract.tokenURI(i.tokenId)
@@ -43,8 +45,10 @@ export default function Home() {
           let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
           let item = {
             price,
-            itemId: i.itemId.toNumber(),
+            projectId: i.projectId.toNumber(),
             seller: i.seller,
+            depSign:i.depSign,
+            contSign:i.contSign,
             owner: i.owner,
             image: meta.data.image,
             name: meta.data.name,
@@ -53,7 +57,8 @@ export default function Home() {
           return item
           
         }))
-        //console.log(items)
+        console.log('items-project')
+        console.log(items)
         setNfts(items)
        
       }
@@ -63,7 +68,14 @@ export default function Home() {
         const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
         const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
         const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
-        const data = await marketContract.fetchProvisions("1")
+        const projectId = window.location.pathname.split("/")[2];
+        console.log(projectId);
+        console.log('location');
+        console.log(window.location);
+        const {nftId} = router.query;
+        console.log('nftId')
+        console.log(nftId)
+        const data = await marketContract.fetchProvisionsbyProject(projectId)
         console.log('data');
         console.log(data);
         const items = await Promise.all(data.map(async i => {
@@ -73,10 +85,11 @@ export default function Home() {
           let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
           let item = {
             price,
-            itemId: i.itemId.toNumber(),
             projectId: i.projectId.toNumber(),
+            provisionId:i.provisionId.toNumber(),
             seller: i.seller,
             owner: i.owner,
+            depSign:i.depSign,
             image: meta.data.image,
             name: meta.data.name,
             description: meta.data.description,
@@ -89,18 +102,107 @@ export default function Home() {
         setProvisions(items)
         setLoadingState('loaded') 
       }
-      async function buyNft(nft) {
-        const web3Modal = new Web3Modal()
-        const connection = await web3Modal.connect()
+      async function contSign(nft) {
+        // Example for kovan:
+      const customNetworkOptions = {
+        rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+        chainId: 42
+      }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+    const connection = await web3Modal.connect()
+
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-        const bidprice = ethers.utils.parseUnits(formInput.bidprice, 'ether')
-        console.log(bidprice);
-        const transaction = await contract.createMarketSale(nftaddress, nft.itemId, bidprice, {
-          value: price
+        const transaction = await contract.projectcontSign(nftaddress, nft.projectId, {
+          value: '0'
+        })
+        await transaction.wait()
+        loadNFTs()
+      }
+      async function provisiondepSign(nft) {
+        // Example for kovan:
+      const customNetworkOptions = {
+        rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+        chainId: 42
+      }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+    const connection = await web3Modal.connect()
+
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    
+        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+        const transaction = await contract.provisionDeptSign(nftaddress, nft.provisionId, {
+          value: '0'
+        })
+        await transaction.wait()
+        loadNFTs()
+      }
+      async function depSign(nft) {
+        // Example for kovan:
+      const customNetworkOptions = {
+        rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+        chainId: 42
+      }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+    const connection = await web3Modal.connect()
+
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    
+        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+        const transaction = await contract.projectdepSign(nftaddress, nft.projectId, {
+          value: '0'
         })
         await transaction.wait()
         loadNFTs()
@@ -112,7 +214,7 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-4 pt-4">
               {
                 nfts.map((nft, i) => (
-                  nft.itemId==nftId &&
+                  nft.projectId==nftId &&
                   <div key={i} className="border shadow rounded-xl overflow-hidden">
                     <object data={nft.image} type="application/pdf" width="1100" height="600">
                       alt : <a href={nft.image}>only pdf files allowed</a>
@@ -125,8 +227,18 @@ export default function Home() {
                     </div>
                     <div className="p-4 bg-black">
                       <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
+                      <p className="text-2xl mb-4 font-bold text-white">
+                      {(nft.depSign===true) ? 'Department Signature: Signed':
+                      <button className='text-xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12'
+                       onClick={()=>depSign(nft)}>Add Department Signature</button>}
+                      </p>
+                      <p className="text-2xl mb-4 font-bold text-white">
+                      {(nft.contSign===true) ? 'Contractor Signature: Signed':
+                      <button className='text-xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12'
+                       onClick={()=>contSign(nft)}>Add Contractor Signature</button>}
+                      </p>
                       <Link href={"/create-provision?project="+nftId} className="text-2xl mb-4 font-bold text-white">
-                        <a className="mr-6 text-pink-500">
+                        <a className="text-2xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12">
                           Create a Provision
                         </a>
                       </Link>
@@ -136,26 +248,25 @@ export default function Home() {
                 ))
               }
               {
-                provisions.map((nft, i) => (
+                provisions.map((provision, i) => (
                   <div key={i} className="border shadow rounded-xl overflow-hidden">
-                    <h3>Provision {i}</h3>
-                    <object data={nft.image} type="application/pdf" width="1100" height="600">
-                      alt : <a href={nft.image}>only pdf files allowed</a>
+                    <h3>Provision {i+1}</h3>
+                    <object data={provision.image} type="application/pdf" width="1100" height="600">
+                      alt : <a href={provision.image}>only pdf files allowed</a>
                     </object>
                     <div className="p-4">
-                      <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
+                      <p style={{ height: '64px' }} className="text-2xl font-semibold">{provision.name}</p>
                       <div style={{ height: '70px', overflow: 'hidden' }}>
-                        <p className="text-gray-400">{nft.description}</p>
+                        <p className="text-gray-400">{provision.description}</p>
                       </div>
                     </div>
                     <div className="p-4 bg-black">
-                      <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
-                      <input
-                          placeholder="Your bid Price in Eth"
-                          className="mt-2 border rounded p-4"
-                          onChange={e => updateFormInput({ ...formInput, bidprice: e.target.value })}
-                      />
-                      <button className="w-1/6 bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyNft(nft)}>Bid</button>
+                      <p className="text-2xl mb-4 font-bold text-white">{provision.price} ETH</p>
+                      <p className="text-2xl mb-4 font-bold text-white">
+                      {(provision.depSign===true) ? 'Department Signature: Signed':
+                      <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'
+                       onClick={()=>provisiondepSign(provision)}>Add Department Signature</button>}
+                      </p>
                     </div>
                   </div>
                 ))
