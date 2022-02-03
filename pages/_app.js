@@ -35,24 +35,30 @@ function Marketplace({ Component, pageProps }) {
     const provider = new ethers.providers.Web3Provider(instance);
     const signer = provider.getSigner();
     const address = await signer.getAddress();
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-    const msg = {
-      to: user.email, // Change to your recipient
-      from: 'mastibaloch979@gmail.com', // Change to your verified sender
+    
+    const data = {
+      toemail: user.email, // Change to your recipient
+      name: 'user',
+      email: 'mastibaloch979@gmail.com', // Change to your verified sender
       subject: 'Login message',
-      text: 'Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
+      message: 'Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
             +' and your wallet address is '+address,
       html: '<strong>Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
             +' and your wallet address is '+address+ '</strong>',
     }
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent')
+    try {
+      await fetch("/api/contact", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(data)
       })
-      .catch((error) => {
-        console.error(error)
-      })
+
+            //if sucess do whatever you like, i.e toast notification
+    
+    } catch (error) {
+        // toast error message. whatever you wish 
+        console.log('toast error');
+    }
     document.getElementById('connect_lib').innerText = 'connected';
   }
   return (
