@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Fortmatic from "fortmatic"
 import Web3Modal from "web3modal"
 import { ethers } from 'ethers'
+import sgMail from '@sendgrid/mail'
 
 function Marketplace({ Component, pageProps }) {
   async function connect() {
@@ -29,9 +30,29 @@ function Marketplace({ Component, pageProps }) {
     });
     
     const instance = await web3Modal.connect();
+    const user = await instance.fm.user.getUser();
     
     const provider = new ethers.providers.Web3Provider(instance);
     const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+    const msg = {
+      to: user.email, // Change to your recipient
+      from: 'mastibaloch979@gmail.com', // Change to your verified sender
+      subject: 'Login message',
+      text: 'Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
+            +' and your wallet address is '+address,
+      html: '<strong>Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
+            +' and your wallet address is '+address+ '</strong>',
+    }
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
     document.getElementById('connect_lib').innerText = 'connected';
   }
   return (
