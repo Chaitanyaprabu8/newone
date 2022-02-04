@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Fortmatic from "fortmatic"
 import Web3Modal from "web3modal"
 import { ethers } from 'ethers'
-import sgMail from '@sendgrid/mail'
 
 function Marketplace({ Component, pageProps }) {
   async function connect() {

@@ -44,6 +44,8 @@ export default function Home() {
         image: meta.data.image,
         name: meta.data.name,
         description: meta.data.description,
+        contemail:i.contemail,
+        depemail:i.depemail
       }
       return item
     }))

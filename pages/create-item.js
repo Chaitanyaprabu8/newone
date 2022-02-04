@@ -16,7 +16,7 @@ import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null)
-  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' })
+  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '', contemail: '' })
   const router = useRouter()
 
   async function onChange(e) {
@@ -35,7 +35,7 @@ export default function CreateItem() {
     }  
   }
   async function createMarket() {
-    const { name, description, price } = formInput
+    const { name, description, price, contemail } = formInput
     if (!name || !description || !price || !fileUrl) return
     /* first, upload to IPFS */
     const data = JSON.stringify({
@@ -74,6 +74,7 @@ export default function CreateItem() {
       providerOptions // required
     });
     const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
     const provider = new ethers.providers.Web3Provider(connection)    
     const signer = provider.getSigner()
     
@@ -87,13 +88,57 @@ export default function CreateItem() {
     let tokenId = value.toNumber()
 
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
+    const contemail = formInput.contemail
     
     /* then list the item for sale on the marketplace */
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: '0' })
+    transaction = await contract.createMarketItem(nftaddress, tokenId, price, contemail, user.email, { value: '0' })
     await transaction.wait()
+    const data = {
+      toemail: user.email, // Change to your recipient
+      name: 'user',
+      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      subject: 'Project Upload',
+      message: 'Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
+      html: '<strong>Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+    }
+    try {
+      await fetch("/api/contact", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(data)
+      })
+
+            //if sucess do whatever you like, i.e toast notification
+    
+    } catch (error) {
+        // toast error message. whatever you wish 
+        console.log('toast error');
+    }
+    const data1 = {
+      toemail: contemail, // Change to your recipient
+      name: 'user',
+      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      subject: 'Project Upload',
+      message: 'Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
+      html: '<strong>Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+    }
+    try {
+      await fetch("/api/contact", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(data1)
+      })
+
+            //if sucess do whatever you like, i.e toast notification
+    
+    } catch (error) {
+        // toast error message. whatever you wish 
+        console.log('toast error');
+    }
+    
     router.push('/')
   }
 
@@ -114,6 +159,11 @@ export default function CreateItem() {
           placeholder="Asset Price in Eth"
           className="mt-2 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
+        />
+        <input
+          placeholder="Contractor email"
+          className="mt-2 border rounded p-4"
+          onChange={e => updateFormInput({ ...formInput, contemail: e.target.value })}
         />
         <input
           type="file"

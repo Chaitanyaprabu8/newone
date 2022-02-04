@@ -94,9 +94,53 @@ export default function CreateItem() {
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
+    let depemail = await contract.getdepemail(projectId)
+    depemail = depemail.toString()
     //let nextProjectId = await contract.getCurrentProjectId();
     transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, { value: '0' })
     await transaction.wait()
+    const data = {
+      toemail: user.email, // Change to your recipient
+      name: 'user',
+      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      subject: 'Provision Upload',
+      message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
+      html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+    }
+    try {
+      await fetch("/api/contact", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(data)
+      })
+
+            //if sucess do whatever you like, i.e toast notification
+    
+    } catch (error) {
+        // toast error message. whatever you wish 
+        console.log('toast error');
+    }
+    const data1 = {
+      toemail: depemail, // Change to your recipient
+      name: 'user',
+      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      subject: 'Provision Upload',
+      message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
+      html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+    }
+    try {
+      await fetch("/api/contact", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(data1)
+      })
+
+            //if sucess do whatever you like, i.e toast notification
+    
+    } catch (error) {
+        // toast error message. whatever you wish 
+        console.log('toast error');
+    }
     router.push('/')
   }
 

@@ -29,6 +29,8 @@ contract NFTMarket is ReentrancyGuard {
     bool sold;
     bool depSign;
     bool contSign;
+    string contemail;
+    string depemail;
   }
   struct ProvisionItem {
     uint provisionId;
@@ -55,7 +57,9 @@ contract NFTMarket is ReentrancyGuard {
     uint256 price,
     bool sold,
     bool depSign,
-    bool contSign
+    bool contSign,
+    string contemail,
+    string depemail
   );
   event ProvisionItemCreated (
     uint indexed provisionId,
@@ -79,7 +83,9 @@ contract NFTMarket is ReentrancyGuard {
   function createMarketItem(
     address nftContract,
     uint256 tokenId,
-    uint256 price
+    uint256 price,
+    string memory contemail,
+    string memory depemail
   ) public payable nonReentrant {
     require(price > 0, "Price must be at least 1 wei");
     
@@ -95,7 +101,9 @@ contract NFTMarket is ReentrancyGuard {
       price,
       false,
       false,
-      false
+      false,
+      contemail,
+      depemail
     );
 
     IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
@@ -109,7 +117,9 @@ contract NFTMarket is ReentrancyGuard {
       price,
       false,
       false,
-      false
+      false,
+      contemail,
+      depemail
     );
   }
   /* Places an item for sale on the marketplace */
@@ -170,32 +180,51 @@ contract NFTMarket is ReentrancyGuard {
   /* sign the project for department */
   function projectdepSign(
     address nftContract,
-    uint256 projectId
-    ) public payable nonReentrant {
+    uint256 projectId,
+    string memory depemail
+    ) public {
+    require(
+      keccak256(bytes(idToMarketItem[projectId].depemail))==keccak256(bytes(depemail)), "department email does not match"
+    );
     idToMarketItem[projectId].depSign = true;
   }
   /* sign the project for contractor */
   function projectcontSign(
     address nftContract,
-    uint256 projectId
-    ) public payable nonReentrant {
+    uint256 projectId,
+    string memory contemail
+    ) public {
+    require(keccak256(bytes(idToMarketItem[projectId].contemail))==keccak256(bytes(contemail)), "Contractor email does not match");
     idToMarketItem[projectId].contSign = true;
   }
   /* sign the provision for department */
   function provisionDeptSign(
     address nftContract,
-    uint256 provisionId
-    ) public payable nonReentrant {
+    uint256 provisionId,
+    uint256 projectId,
+    string memory depemail
+    ) public {
+    require(keccak256(bytes(idToMarketItem[projectId].depemail))==keccak256(bytes(depemail)), "Department email does not match");
     idToProvisionItem[provisionId].depSign = true;
   }
   /* sign the provision for department */
   function provisionContSign(
     address nftContract,
-    uint256 provisionId
-    ) public payable nonReentrant {
+    uint256 provisionId,
+    uint256 projectId,
+    string memory contemail
+    ) public {
+    require(keccak256(bytes(idToMarketItem[projectId].contemail))==keccak256(bytes(contemail)), "Contractor email does not match");
     idToProvisionItem[provisionId].contSign = true;
   }
-
+  /* Get department email */
+  function getdepemail(uint256 projectId) public view returns (string memory) {
+    return idToMarketItem[projectId].depemail;
+  }
+  /* Get contractor email */
+  function getcontemail(uint256 projectId) public view returns (string memory) {
+    return idToMarketItem[projectId].contemail;
+  }
   /* Returns all project items */
   function fetchMarketItems() public view returns (MarketItem[] memory) {
     uint itemCount = _projectIds.current();

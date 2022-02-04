@@ -21,6 +21,7 @@ if (process.env.NEXT_PUBLIC_WORKSPACE_URL) {
 export default function Home() {
     const router = useRouter();
     const {nftId} = router.query;
+    const {projectId,setprojectId} = useState(nftId)
     const [nfts, setNfts] = useState([])
     const [provisions, setProvisions] = useState([])
     const [loadingState, setLoadingState] = useState('not-loaded')
@@ -53,6 +54,8 @@ export default function Home() {
             image: meta.data.image,
             name: meta.data.name,
             description: meta.data.description,
+            contemail:i.contemail,
+            depemail:i.depemail
           }
           return item
           
@@ -90,6 +93,7 @@ export default function Home() {
             seller: i.seller,
             owner: i.owner,
             depSign:i.depSign,
+            contSign:i.contSign,
             image: meta.data.image,
             name: meta.data.name,
             description: meta.data.description,
@@ -125,13 +129,14 @@ export default function Home() {
       providerOptions // required
     });
     const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
 
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-        const transaction = await contract.projectcontSign(nftaddress, nft.projectId, {
+        const transaction = await contract.projectcontSign(nftaddress, nft.projectId, user.email,  {
           value: '0'
         })
         await transaction.wait()
@@ -160,13 +165,50 @@ export default function Home() {
       providerOptions // required
     });
     const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
 
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-        const transaction = await contract.provisionDeptSign(nftaddress, nft.provisionId, {
+        const transaction = await contract.provisionDeptSign(nftaddress, nft.provisionId,projectId,user.email, {
+          value: '0'
+        })
+        await transaction.wait()
+        loadNFTs()
+      }
+      async function provisionContSign(nft) {
+        // Example for kovan:
+      const customNetworkOptions = {
+        rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+        chainId: 42
+      }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+    const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
+
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    
+        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+        const transaction = await contract.provisionContSign(nftaddress, nft.provisionId,projectId,user.email, {
           value: '0'
         })
         await transaction.wait()
@@ -195,13 +237,14 @@ export default function Home() {
       providerOptions // required
     });
     const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
 
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-        const transaction = await contract.projectdepSign(nftaddress, nft.projectId, {
+        const transaction = await contract.projectdepSign(nftaddress, nft.projectId, user.email, {
           value: '0'
         })
         await transaction.wait()
@@ -227,6 +270,9 @@ export default function Home() {
                     </div>
                     <div className="p-4 bg-black">
                       <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
+                      <p className="text-2xl mb-4 font-bold text-white">Signers</p>
+                      <p className="text-2xl mb-4 font-bold text-white">{nft.depemail}</p>
+                      <p className="text-2xl mb-4 font-bold text-white">{nft.contemail}</p>
                       <p className="text-2xl mb-4 font-bold text-white">
                       {(nft.depSign===true) ? 'Department Signature: Signed':
                       <button className='text-xl mb-4 font-bold text-white bg-pink-500 rounded py-2 px-12'
@@ -266,6 +312,9 @@ export default function Home() {
                       {(provision.depSign===true) ? 'Department Signature: Signed':
                       <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'
                        onClick={()=>provisiondepSign(provision)}>Add Department Signature</button>}
+                       {(provision.contSign===true) ? 'Contractor Signature: Signed':
+                      <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'
+                       onClick={()=>provisionContSign(provision)}>Add Contractor Signature</button>}
                       </p>
                     </div>
                   </div>
