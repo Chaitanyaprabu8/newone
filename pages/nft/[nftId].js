@@ -172,11 +172,12 @@ export default function Home() {
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+        const projectId = window.location.pathname.split("/")[2];
         const transaction = await contract.provisionDeptSign(nftaddress, nft.provisionId,projectId,user.email, {
           value: '0'
         })
         await transaction.wait()
-        loadNFTs()
+        loadProvisions()
       }
       async function provisionContSign(nft) {
         // Example for kovan:
@@ -208,11 +209,12 @@ export default function Home() {
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+        const projectId = window.location.pathname.split("/")[2];
         const transaction = await contract.provisionContSign(nftaddress, nft.provisionId,projectId,user.email, {
           value: '0'
         })
         await transaction.wait()
-        loadNFTs()
+        loadProvisions()
       }
       async function depSign(nft) {
         // Example for kovan:
@@ -312,6 +314,8 @@ export default function Home() {
                       {(provision.depSign===true) ? 'Department Signature: Signed':
                       <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'
                        onClick={()=>provisiondepSign(provision)}>Add Department Signature</button>}
+                       </p>
+                       <p className='text-2xl mb-4 font-bold text-white'>
                        {(provision.contSign===true) ? 'Contractor Signature: Signed':
                       <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'
                        onClick={()=>provisionContSign(provision)}>Add Contractor Signature</button>}
