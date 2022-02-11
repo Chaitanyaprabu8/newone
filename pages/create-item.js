@@ -36,7 +36,7 @@ export default function CreateItem() {
   }
   async function createMarket() {
     const { name, description, price, contemail } = formInput
-    if (!name || !description || !price || !fileUrl) return
+    if (!name || !description || !fileUrl) return
     /* first, upload to IPFS */
     const data = JSON.stringify({
       name, description, image: fileUrl
@@ -87,7 +87,7 @@ export default function CreateItem() {
     let value = event.args[2]
     let tokenId = value.toNumber()
 
-    const price = ethers.utils.parseUnits(formInput.price, 'ether')
+    const price = ethers.utils.parseUnits('1', 'ether')
     const contemail = formInput.contemail
     
     /* then list the item for sale on the marketplace */
@@ -157,7 +157,7 @@ export default function CreateItem() {
         />
         <input
           placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
+          className="mt-2 border rounded p-4 hidden"
           onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
         />
         <input

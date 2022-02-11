@@ -271,7 +271,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="p-4 bg-black">
-                      <p className="text-2xl mb-4 font-bold text-white">{nft.price} ETH</p>
+                      <p className="text-2xl mb-4 font-bold text-white hidden">{nft.price} ETH</p>
                       <p className="text-2xl mb-4 font-bold text-white">Signers</p>
                       <p className="text-2xl mb-4 font-bold text-white">{nft.depemail}</p>
                       <p className="text-2xl mb-4 font-bold text-white">{nft.contemail}</p>
@@ -309,7 +309,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="p-4 bg-black">
-                      <p className="text-2xl mb-4 font-bold text-white">{provision.price} ETH</p>
+                      <p className="text-2xl mb-4 font-bold text-white hidden">{provision.price} ETH</p>
                       <p className="text-2xl mb-4 font-bold text-white">
                       {(provision.depSign===true) ? 'Department Signature: Signed':
                       <button className='w-1/6 bg-pink-500 text-white font-bold py-2 px-2 rounded'

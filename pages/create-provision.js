@@ -36,7 +36,7 @@ export default function CreateItem() {
   }
   async function createMarket() {
     const { name, description, price } = formInput
-    if (!name || !description || !price || !fileUrl) return
+    if (!name || !description || !fileUrl) return
     /* first, upload to IPFS */
     const data = JSON.stringify({
       name, description, image: fileUrl
@@ -74,6 +74,7 @@ export default function CreateItem() {
       providerOptions // required
     });
     const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
     const provider = new ethers.providers.Web3Provider(connection)    
     const signer = provider.getSigner()
     
@@ -88,7 +89,7 @@ export default function CreateItem() {
     // VanillaJS
     const projectId = window.location.search.split("=")[1];
     console.log(projectId); //101
-    const price = ethers.utils.parseUnits(formInput.price, 'ether')
+    const price = ethers.utils.parseUnits('1', 'ether')
   
     /* then list the item for sale on the marketplace */
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
@@ -96,6 +97,7 @@ export default function CreateItem() {
     listingPrice = listingPrice.toString()
     let depemail = await contract.getdepemail(projectId)
     depemail = depemail.toString()
+    console.log(depemail);
     //let nextProjectId = await contract.getCurrentProjectId();
     transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, { value: '0' })
     await transaction.wait()
@@ -141,7 +143,7 @@ export default function CreateItem() {
         // toast error message. whatever you wish 
         console.log('toast error');
     }
-    router.push('/')
+    //router.push('/')
   }
 
   return (
@@ -159,7 +161,7 @@ export default function CreateItem() {
         />
         <input
           placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
+          className="mt-2 border rounded p-4 hidden"
           onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
         />
         <input
