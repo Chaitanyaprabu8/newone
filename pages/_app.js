@@ -37,8 +37,8 @@ function Marketplace({ Component, pageProps }) {
     
     const data = {
       toemail: user.email, // Change to your recipient
-      name: 'user',
-      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      name: 'True Contracts',
+      email: 'info@iserveinc.in', // Change to your verified sender
       subject: 'Login message',
       message: 'Hi this is to remind you that you have successfully logged in fortmatic with email '+user.email
             +' and your wallet address is '+address,
@@ -63,7 +63,7 @@ function Marketplace({ Component, pageProps }) {
   return (
     <div>
       <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Decentralized Governmental Contracts Marketplace</p>
+        <p className="text-4xl font-bold">Decentralized Government Contracts Marketplace</p>
         <div className="flex mt-4">
           <Link href="/">
             <a className="mr-4 text-pink-500">

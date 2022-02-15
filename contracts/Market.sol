@@ -127,10 +127,11 @@ contract NFTMarket is ReentrancyGuard {
     address nftContract,
     uint256 tokenId,
     uint256 projectId,
-    uint256 price
+    uint256 price,
+    string memory contemail
   ) public payable nonReentrant {
     require(price > 0, "Price must be at least 1 wei");
-
+    require(keccak256(bytes(idToMarketItem[projectId].contemail))==keccak256(bytes(contemail)), "Contractor email does not match");
     _provisionIds.increment();
     uint256 provisionId = _provisionIds.current();
   

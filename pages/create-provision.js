@@ -99,12 +99,12 @@ export default function CreateItem() {
     depemail = depemail.toString()
     console.log(depemail);
     //let nextProjectId = await contract.getCurrentProjectId();
-    transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, { value: '0' })
+    transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, user.email, { value: '0' })
     await transaction.wait()
     const data = {
       toemail: user.email, // Change to your recipient
-      name: 'user',
-      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      name: 'True Contracts',
+      email: 'Info@iserveinc.in', // Change to your verInfo@iserveinc.inified sender
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
@@ -124,8 +124,8 @@ export default function CreateItem() {
     }
     const data1 = {
       toemail: depemail, // Change to your recipient
-      name: 'user',
-      email: 'mastibaloch979@gmail.com', // Change to your verified sender
+      name: 'True Contracts',
+      email: 'Info@iserveinc.in', // Change to your verified sender
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'

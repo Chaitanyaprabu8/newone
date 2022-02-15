@@ -261,9 +261,9 @@ export default function Home() {
                 nfts.map((nft, i) => (
                   nft.projectId==nftId &&
                   <div key={i} className="border shadow rounded-xl overflow-hidden">
-                    <object data={nft.image} type="application/pdf" width="1100" height="600">
-                      alt : <a href={nft.image}>only pdf files allowed</a>
-                    </object>
+                    <iframe src={nft.image} type="application/pdf" width="1100" height="600">
+                    
+                    </iframe>
                     <div className="p-4">
                       <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
                       <div style={{ height: '70px', overflow: 'hidden' }}>
@@ -299,9 +299,8 @@ export default function Home() {
                 provisions.map((provision, i) => (
                   <div key={i} className="border shadow rounded-xl overflow-hidden">
                     <h3>Provision {i+1}</h3>
-                    <object data={provision.image} type="application/pdf" width="1100" height="600">
-                      alt : <a href={provision.image}>only pdf files allowed</a>
-                    </object>
+                    <iframe src={provision.image} type="application/pdf" width="1100" height="600">
+                    </iframe>
                     <div className="p-4">
                       <p style={{ height: '64px' }} className="text-2xl font-semibold">{provision.name}</p>
                       <div style={{ height: '70px', overflow: 'hidden' }}>
