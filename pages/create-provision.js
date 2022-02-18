@@ -4,6 +4,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
 import Fortmatic from "fortmatic"
+import axios from 'axios'
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
@@ -77,9 +78,24 @@ export default function CreateItem() {
     const user = await connection.fm.user.getUser()
     const provider = new ethers.providers.Web3Provider(connection)    
     const signer = provider.getSigner()
+    const projectId = window.location.search.split("=")[1];
+    let contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    let listingPrice = await contract.getListingPrice()
+    listingPrice = listingPrice.toString()
+    let depemail = await contract.getdepemail(projectId)
+    depemail = depemail.toString()
+    let contemail = await contract.getcontemail(projectId)
+    contemail = contemail.toString()
+    if(!user.email==depemail||user.email==contemail) return;
+    let tokenId = await contract.getprojectTokenId(projectId);
+    tokenId = tokenId.toNumber()
     
     /* next, create the item */
-    let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    contract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    
+    const tokenUri = await contract.tokenURI(tokenId)
+    const meta = await axios.get(tokenUri)
+    const projectName = meta.data.name;
     let transaction = await contract.createToken(url)
     let tx = await transaction.wait()
     console.log(tx)
@@ -87,7 +103,7 @@ export default function CreateItem() {
     let value = event.args[2]
     let tokenId = value.toNumber()
     // VanillaJS
-    const projectId = window.location.search.split("=")[1];
+    
     console.log(projectId); //101
     const price = ethers.utils.parseUnits('1', 'ether')
   
@@ -97,17 +113,21 @@ export default function CreateItem() {
     listingPrice = listingPrice.toString()
     let depemail = await contract.getdepemail(projectId)
     depemail = depemail.toString()
-    console.log(depemail);
+    let contemail = await contract.getcontemail(projectId)
+    contemail = contemail.toString()
+    const { name } = formInput
     //let nextProjectId = await contract.getCurrentProjectId();
     transaction = await contract.createProvisionItem(nftaddress, tokenId,projectId, price, user.email, { value: '0' })
     await transaction.wait()
+    
     const data = {
-      toemail: user.email, // Change to your recipient
+      toemail: depemail, // Change to your recipient
       name: 'True Contracts',
       email: 'Info@iserveinc.in', // Change to your verInfo@iserveinc.inified sender
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
-      html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+      html: '<p>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</p>'
+      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p><a href=""></a></p>'
     }
     try {
       await fetch("/api/contact", {
@@ -123,12 +143,13 @@ export default function CreateItem() {
         console.log('toast error');
     }
     const data1 = {
-      toemail: depemail, // Change to your recipient
+      toemail: contemail, // Change to your recipient
       name: 'True Contracts',
       email: 'Info@iserveinc.in', // Change to your verified sender
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p><a href=""></a></p>'
     }
     try {
       await fetch("/api/contact", {
