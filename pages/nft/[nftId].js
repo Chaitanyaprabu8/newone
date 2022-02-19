@@ -26,9 +26,43 @@ export default function Home() {
     const [provisions, setProvisions] = useState([])
     const [loadingState, setLoadingState] = useState('not-loaded')
     const [formInput, updateFormInput] = useState({ bidprice: '' })
-    useEffect(() => {
+    useEffect(async() => {
+      const customNetworkOptions = {
+        rpcUrl: 'https://kovan.infura.io/v3/8c661edd6d764e1e95fd0318054d331c',
+        chainId: 42
+      }
+
+    const providerOptions = {
+      fortmatic: {
+        package: Fortmatic, // required
+        options: {
+          key: "pk_test_5C2C23DF77F87C60", // required,
+          network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+        }
+      }
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "kovan", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+    const connection = await web3Modal.connect()
+    const user = await connection.fm.user.getUser()
+    const provider = new ethers.providers.Web3Provider(connection)    
+    const signer = provider.getSigner()
+    const projectId = window.location.pathname.split("/")[2];
+    let contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
+    let listingPrice = await contract.getListingPrice()
+    listingPrice = listingPrice.toString()
+    let depemail = await contract.getdepemail(projectId)
+    depemail = depemail.toString()
+    let contemail = await contract.getcontemail(projectId)
+    contemail = contemail.toString()
+    if(user.email==depemail||user.email==contemail) {
       loadNFTs(),
       loadProvisions()
+    }
     }, [])
     async function loadNFTs() { 
         
