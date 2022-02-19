@@ -86,7 +86,7 @@ export default function CreateItem() {
     depemail = depemail.toString()
     let contemail = await contract.getcontemail(projectId)
     contemail = contemail.toString()
-    if(!user.email==depemail||user.email==contemail) return;
+    if(user.email!=depemail&&user.email!=contemail) return;
     let tokenId = await contract.getprojectTokenId(projectId);
     tokenId = tokenId.toNumber()
     
@@ -111,7 +111,7 @@ export default function CreateItem() {
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     const { name } = formInput
     //let nextProjectId = await contract.getCurrentProjectId();
-    transaction = await contract.createProvisionItem(nftaddress, tokenId1,projectId, price, user.email, { value: '0' })
+    transaction = await contract.createProvisionItem(nftaddress, tokenId1,projectId, price, { value: '0' })
     await transaction.wait()
     
     const data = {
@@ -121,7 +121,7 @@ export default function CreateItem() {
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<p>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</p>'
-      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p><a href="https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-eu32.gitpod.io/nft/'+projectId+'" target="_blank">click here to open the project</a></p>'
+      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p>Project Link: https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-eu33.gitpod.io/nft/'+projectId+'</p>'
     }
     try {
       await fetch("/api/contact", {
@@ -143,7 +143,7 @@ export default function CreateItem() {
       subject: 'Provision Upload',
       message: 'Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a provision have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
-      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p><a href="https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-eu32.gitpod.io/nft/'+projectId+'" target="_blank">click here to open the project</a></p>'
+      +'<p>Project Name: '+projectName+'</p>'+'<p>Provision Name: '+name+'</p>'+'<p>Project Link: https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-eu33.gitpod.io/nft/'+projectId+'</p>'
     }
     try {
       await fetch("/api/contact", {
@@ -158,7 +158,7 @@ export default function CreateItem() {
         // toast error message. whatever you wish 
         console.log('toast error');
     }
-    //router.push('/')
+    router.push('/')
   }
 
   return (

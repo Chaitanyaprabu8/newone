@@ -96,6 +96,7 @@ export default function CreateItem() {
     listingPrice = listingPrice.toString()
     transaction = await contract.createMarketItem(nftaddress, tokenId, price, contemail, user.email, { value: '0' })
     await transaction.wait()
+    const { name } = formInput
     const data = {
       toemail: user.email, // Change to your recipient
       name: 'True Contracts',
@@ -103,7 +104,8 @@ export default function CreateItem() {
       subject: 'Project Upload',
       message: 'Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
-    }
+    + '<p>Project Name: '+name+'</p>'+'<p>Project Link: https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-us33.gitpod.io</p>'
+  }
     try {
       await fetch("/api/contact", {
         "method": "POST",
@@ -124,6 +126,7 @@ export default function CreateItem() {
       subject: 'Project Upload',
       message: 'Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website',
       html: '<strong>Hi this is to inform you that a project have been successfully uploaded on the website with your email,please add your signatures by logging into the website</strong>'
+     + '<p>Project Name: '+name+'</p>'+'<p>Project Link: https://3000-chaitanyaprabu8-newone-yj5vs1wvovq.ws-us33.gitpod.io</p>'
     }
     try {
       await fetch("/api/contact", {
