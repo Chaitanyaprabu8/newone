@@ -49,6 +49,7 @@ export default function Home() {
     });
     const connection = await web3Modal.connect()
     const user = await connection.fm.user.getUser()
+    console.log('user email '+user.email);
     const provider = new ethers.providers.Web3Provider(connection)    
     const signer = provider.getSigner()
     const projectId = window.location.pathname.split("/")[2];
@@ -57,9 +58,11 @@ export default function Home() {
     listingPrice = listingPrice.toString()
     let depemail = await contract.getdepemail(projectId)
     depemail = depemail.toString()
+    console.log('depemail '+ depemail);
     let contemail = await contract.getcontemail(projectId)
     contemail = contemail.toString()
-    if(user.email==depemail||user.email==contemail) {
+    console.log('contemail '+contemail)
+    if(user.email===depemail||user.email===contemail) {
       loadNFTs(),
       loadProvisions()
     }
