@@ -39,3 +39,5 @@ node_modules
 
 #Hardhat files
 cache
+# static folder for DigitalOcean App Platform
+_static
